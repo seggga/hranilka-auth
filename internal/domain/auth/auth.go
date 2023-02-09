@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/seggga/hranilka-auth/internal/domain/models"
 	"github.com/seggga/hranilka-auth/internal/ports"
 )
@@ -49,14 +51,13 @@ func (s *Service) Validate(ctx context.Context, token string) (string, error) {
 // Login checks login/password correctness and
 // produces token
 func (s *Service) Login(ctx context.Context, login, password string) (*models.Token, error) {
-	// extract user from DB
 	user, err := s.db.Get(ctx, login)
 	if err != nil {
 		return nil, err
 	}
 
 	// check password correctness
-	err = checkPass(password, user.PassHash)
+	err = bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(password))
 	if err != nil {
 		return nil, err
 	}
@@ -70,10 +71,25 @@ func (s *Service) Login(ctx context.Context, login, password string) (*models.To
 	return &models.Token{Access: token}, nil
 }
 
-func checkPass(pass, hash string) error {
-	// TODO: change hash calculation
-	if pass == hash {
-		return nil
+// SignUp registers a new user
+func (s *Service) SignUp(ctx context.Context, user *models.User) error {
+	if user.Login == "" {
+		return ErrEmptyLogin
 	}
-	return ErrPassIncorrect
+	if len(user.Password) > 72 { // limitation of bcrypt algorythm
+		return ErrPassTooLong
+	}
+	cost := 10
+	passHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), cost)
+	if err != nil {
+		return fmt.Errorf("cannot generate hash from given pass: %w", err)
+	}
+
+	return s.db.Create(ctx, &models.User{
+		Name:     user.Name,
+		Login:    user.Login,
+		Password: "",
+		PassHash: string(passHash),
+		Email:    user.Email,
+	})
 }
