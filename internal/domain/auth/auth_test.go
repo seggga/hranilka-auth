@@ -39,13 +39,13 @@ func TestValidate(t *testing.T) {
 	sets := []testSet{
 		{
 			name:      "valid token, expect no error",
-			secret:    testAuthLogin,
+			secret:    testAuthSecret,
 			expectErr: nil,
 			duration:  10,
 		},
 		{
 			name:      "token with zero duration, expect not nil error",
-			secret:    testAuthLogin,
+			secret:    testAuthSecret,
 			expectErr: errors.New("zero duration"),
 			duration:  0,
 		},
@@ -71,8 +71,12 @@ func TestValidate(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
+	// TODO: write test
+	t.Skip()
+}
 
-	// Login(ctx, login, password string) (*models.Token, error)
+func TestSignUp(t *testing.T) {
+	// TODO: write test
 	t.Skip()
 }
 
@@ -87,5 +91,11 @@ func (m *MockStorage) Get(ctx context.Context, login string) (*models.User, erro
 	}
 
 	return nil, errors.New("user with specified login was not found")
+}
 
+func (m *MockStorage) Create(ctx context.Context, user *models.User) error {
+	return nil
+}
+func (m *MockStorage) Set(ctx context.Context, user *models.User) error {
+	return nil
 }
