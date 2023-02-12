@@ -10,4 +10,5 @@ type UserStorage interface {
 	Create(ctx context.Context, user *models.User) error
 	Get(ctx context.Context, login string) (*models.User, error)
 	Set(ctx context.Context, user *models.User) error
+	SetPass(ctx context.Context, login, passHash string) error
 }
