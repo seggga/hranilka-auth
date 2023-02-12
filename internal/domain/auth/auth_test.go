@@ -79,6 +79,14 @@ func TestSignUp(t *testing.T) {
 	// TODO: write test
 	t.Skip()
 }
+func TestChangeProfile(t *testing.T) {
+	// TODO: write test
+	t.Skip()
+}
+func TestChangePass(t *testing.T) {
+	// TODO: write test
+	t.Skip()
+}
 
 type MockStorage struct{}
 
@@ -97,5 +105,8 @@ func (m *MockStorage) Create(ctx context.Context, user *models.User) error {
 	return nil
 }
 func (m *MockStorage) Set(ctx context.Context, user *models.User) error {
+	return nil
+}
+func (m *MockStorage) SetPass(ctx context.Context, login, pass string) error {
 	return nil
 }
